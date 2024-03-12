@@ -1,0 +1,1 @@
+1. To create a resource: INSERT INTO table_name VALUES(value1, value2, ...)
