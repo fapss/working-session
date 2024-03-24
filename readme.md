@@ -13,3 +13,6 @@ Types of ORM
 
 Database
 - PostgresQL
+
+Query parameter: base_url?key=value
+Path parameter: base_url/:path
