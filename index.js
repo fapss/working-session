@@ -3,7 +3,7 @@ const express = require("express")
 const db = require('./datasource/db')
 // const { uuid } = require('uuidv4');
 const { v4 } = require('uuid')
-const create = require('./repository/customer')
+const Repository = require('./repository/customer')
 // Instantiate the express server
 const app = express()
 
@@ -29,56 +29,38 @@ db.connect()
 app.post('/create', async function (req, res){
 
     const { name, email, username, password } = req.body
-    const response = await create(v4(), name, email, username, password)
-    return res.send(response)
+    const response = await Repository.create(name, email, username, password)
+    // return res.send(response)
+    return res.status(201).send(response)
 })
 
 // retreive all records
-app.get('/fetch', function(req, res){
-
-    db.query('SELECT * FROM customer', function(err, data){
-        if(err){
-            console.log(err)
-        } else {
-            return res.send(data.rows);
-        }
-    })
+app.get('/fetch', async function(req, res){
+    const response = await Repository.findAll()
+    return res.send(response)
 })
 
 // retrieve single record
-app.get('/single/:id', function(req, res){
-    const id = req.params.id
-    db.query(`SELECT * FROM customer WHERE id = '${id}'`, function(err, data){
-        if(err){
-            console.log(err)
-        } else {
-            return res.send(data.rows[0])
-        }
-    })
+app.get('/fetch/:id', async function(req, res){
+    const { id }= req.params
+    const response = await Repository.findOne(id)
+    return res.send(response)
 })
 
 // update single record
-app.patch('/update/:id', function(req, res){
-    const id = req.params.id
-    db.query(`UPDATE customer SET email = 'altruist@gmail.com' WHERE id = '${id}'`, function(err, data){
-        if(err){
-            console.log(err)
-        } else {
-            return res.send(data)
-        }
-    })
+app.patch('/update/:id', async function(req, res){
+    const { name, email, username, password } = req.body
+    const {id} = req.params
+    const response = await Repository.update(id, name, email, username, password)
+    return res.send(response)
 })
 
 // delete single record
-app.delete('/delete/:id', function(req, res){
-    const id = req.params.id
-    db.query(`DELETE FROM customer WHERE id = '${id}'`, function(err, data){
-        if(err){
-            console.log(err)
-        } else {
-            return res.send(data)
-        }
-    })
+app.delete('/delete/:id', async function(req, res){
+    const { id } = req.params
+    const response = await Repository.remove(id)
+    return res.send(response)
+    
 })
 
 
