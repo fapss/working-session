@@ -16,3 +16,5 @@ Database
 
 Query parameter: base_url?key=value
 Path parameter: base_url/:path
+
+Datasource -> Model -> Repository -> Service -> Controller -> Routes -> Entry file

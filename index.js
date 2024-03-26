@@ -1,13 +1,18 @@
 // Import express
 const express = require("express")
-const db = require('./db')
+const db = require('./datasource/db')
 // const { uuid } = require('uuidv4');
 const { v4 } = require('uuid')
+const create = require('./repository/customer')
 // Instantiate the express server
 const app = express()
 
 // Set server port
 const port = 5000
+
+// body parser
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 // db connection
 db.connect()
@@ -21,14 +26,11 @@ db.connect()
 
 
 // create record
-app.post('/create', function (req, res){
-    db.query(`INSERT INTO customer (id, name, email, username, password) VALUES ('${v4()}', 'segun', 'segun@gmail.com', 'altruist', 'altruist@1')`, function(err, data){
-        if(err){
-            console.log(err)
-        } else {
-            console.log(data)
-        }
-    })
+app.post('/create', async function (req, res){
+
+    const { name, email, username, password } = req.body
+    const response = await create(v4(), name, email, username, password)
+    return res.send(response)
 })
 
 // retreive all records
