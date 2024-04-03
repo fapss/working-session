@@ -38,3 +38,9 @@ error response: {
 3. Return error for a user that does not exist in the db
 4. Update should not return 'undefined' for parameters whose values are not passed
 5. I should not be able to update or delete an unexisting record
+
+
+**Assignment on 03-04-2024**
+1. user registration (with proper fields validation)
+2. user login (with access token - Jsonwebtoken)
+3. protected route (accessible by loggedin user e.g find single user endpoint, find all users endpoint, update user, delete user)

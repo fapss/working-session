@@ -26,41 +26,61 @@ db.connect()
 
 
 // create record
-app.post('/create', async function (req, res){
-
+app.post('/user', async function (req, res){
     const { name, email, username, password } = req.body
-    const response = await Repository.create(name, email, username, password)
+    try {
+        const response = await Repository.create(v4(), name, email, username, password)
+        if(response?.rowCount > 0){
+            return res.send({ name, email, username, password })
+        }
+        return res.send({ message: 'Unable to create user' });
+    } catch (error) {
+        console.error(error.message)
+        return res.send(error.message)
+    }
     // return res.send(response)
-    return res.status(201).send(response)
 })
 
 // retreive all records
-app.get('/fetch', async function(req, res){
-    const response = await Repository.findAll()
-    return res.send(response)
+app.get('/users', async function(req, res){
+    const user = await Repository.findAll()
+    return res.status(200).json({  data: user.rows })
 })
 
 // retrieve single record
-app.get('/fetch/:id', async function(req, res){
-    const { id }= req.params
-    const response = await Repository.findOne(id)
-    return res.send(response)
+app.get('/user/:id', async function(req, res){
+    const { id } = req.params
+    const user = await Repository.findOne(id)
+    return res.status(200).json(user.rows[0])
 })
 
 // update single record
-app.patch('/update/:id', async function(req, res){
-    const { name, email, username, password } = req.body
-    const {id} = req.params
-    const response = await Repository.update(id, name, email, username, password)
-    return res.send(response)
+app.patch('/user/:id', async function(req, res){
+    const { id } = req.params
+    const { name, email, username, password } = req.body;
+    try {
+        const user = await Repository.findOne(id)
+        if(!user.rows.length) {
+            return res.send({ message: "User cannot be found"})
+        }
+    
+        const payload = {
+            name: name || user.rows[0].name,
+            email: email || user.rows[0].email,
+            username: username || user.rows[0].username,
+            password: password || user.rows[0].password,
+        }
+    
+        const updatedUser = await Repository.update(id, payload.name, payload.email, payload.username, payload.password)
+        return res.send(updatedUser) 
+    } catch (error) {
+        console.log(error.message)
+        return res.send('Server Error: something went wrong')
+    }
 })
 
 // delete single record
-app.delete('/delete/:id', async function(req, res){
-    const { id } = req.params
-    const response = await Repository.remove(id)
-    return res.send(response)
-    
+app.delete('/delete/:id', function(req, res){
 })
 
 
